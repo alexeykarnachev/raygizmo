@@ -12,6 +12,10 @@
 ## Example
 In a simplest case gizmo can be used like this:
 ```c
+#define RAYGIZMO_IMPLEMENTATION
+#include "path/to/gizmo.h"
+#undef RAYGIZMO_IMPLEMENTATION
+
 // Draw the model here:
 BeginMode3D(camera);
     DrawModel(model, ...);
