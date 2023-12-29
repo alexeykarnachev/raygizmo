@@ -16,18 +16,29 @@ In a simplest case gizmo can be used like this:
 #include "path/to/gizmo.h"
 #undef RAYGIZMO_IMPLEMENTATION
 
-// Draw the model here:
-BeginMode3D(camera);
-    DrawModel(model, ...);
-EndMode3D();
+LoadGizmo();
 
-// Immediately update and draw gizmo
-Vector3 position = {
-    model.transform.m12, model.transform.m13, model.transform.m14};
-Matrix transform = UpdateGizmo(camera, position);
+while (!WindowShouldClose()) {
+    BeginDrawing();
 
-// Apply gizmo-produced transformation to the model
-model.transform = MatrixMultiply(model.transform, transform);
+        // Draw the model here:
+        BeginMode3D(camera);
+            DrawModel(model, ...);
+        EndMode3D();
+
+        // Immediately update and draw gizmo
+        Vector3 position = {
+            model.transform.m12, model.transform.m13, model.transform.m14};
+        Matrix transform = UpdateGizmo(camera, position);
+
+        // Apply gizmo-produced transformation to the model
+        model.transform = MatrixMultiply(model.transform, transform);
+
+    EndDrawing();
+}
+
+UnloadGizmo();
+CloseWindow();
 ```
 
 
