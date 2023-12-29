@@ -13,32 +13,48 @@
 In a simplest case gizmo can be used like this:
 ```c
 #define RAYGIZMO_IMPLEMENTATION
-#include "path/to/gizmo.h"
+#include "../src/gizmo.h"
 #undef RAYGIZMO_IMPLEMENTATION
 
-LoadGizmo();
+int main(void) {
+    InitWindow(800, 600, "Gizmo");
 
-while (!WindowShouldClose()) {
-    BeginDrawing();
+    Camera3D camera;
+    camera.fovy = 45.0f;
+    camera.target = (Vector3){0.0f, 0.0f, 0.0f};
+    camera.position = (Vector3){5.0f, 5.0f, 5.0f};
+    camera.up = (Vector3){0.0f, 1.0f, 0.0f};
+    camera.projection = CAMERA_PERSPECTIVE;
 
-        // Draw the model here:
-        BeginMode3D(camera);
-            DrawModel(model, ...);
-        EndMode3D();
+    Model model = LoadModelFromMesh(GenMeshTorus(0.3, 1.5, 16.0, 16.0));
 
-        // Immediately update and draw gizmo
-        Vector3 position = {
-            model.transform.m12, model.transform.m13, model.transform.m14};
-        Matrix transform = UpdateGizmo(camera, position);
+    LoadGizmo();
 
-        // Apply gizmo-produced transformation to the model
-        model.transform = MatrixMultiply(model.transform, transform);
+    while (!WindowShouldClose()) {
+        BeginDrawing();
+            ClearBackground(BLACK);
 
-    EndDrawing();
+            // Draw the model
+            BeginMode3D(camera);
+                DrawModel(model, (Vector3){0.0, 0.0, 0.0}, 1.0, PURPLE);
+            EndMode3D();
+
+            // Immediately update and draw gizmo
+            Vector3 position = {
+                model.transform.m12, model.transform.m13, model.transform.m14};
+            Matrix transform = UpdateGizmo(camera, position);
+
+            // Apply gizmo-produced transformation to the model
+            model.transform = MatrixMultiply(model.transform, transform);
+        EndDrawing();
+    }
+
+    UnloadGizmo();
+    UnloadModel(model);
+    CloseWindow();
+
+    return 0;
 }
-
-UnloadGizmo();
-CloseWindow();
 ```
 
 

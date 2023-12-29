@@ -49,7 +49,6 @@ int main(void) {
     camera.up = (Vector3){0.0f, 1.0f, 0.0f};
     camera.projection = CAMERA_PERSPECTIVE;
 
-    Vector3 rotation = {0};
     Model model = LoadModelFromMesh(GenMeshTorus(0.3, 1.5, 16.0, 16.0));
 
     LoadGizmo();
