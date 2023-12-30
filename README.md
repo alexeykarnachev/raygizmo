@@ -13,7 +13,7 @@
 In a simplest case gizmo can be used like this:
 ```c
 #define RAYGIZMO_IMPLEMENTATION
-#include "../src/gizmo.h"
+#include "../src/raygizmo.h"
 #undef RAYGIZMO_IMPLEMENTATION
 
 int main(void) {
@@ -28,7 +28,7 @@ int main(void) {
 
     Model model = LoadModelFromMesh(GenMeshTorus(0.3, 1.5, 16.0, 16.0));
 
-    LoadGizmo();
+    loadGizmo();
 
     while (!WindowShouldClose()) {
         BeginDrawing();
@@ -42,14 +42,14 @@ int main(void) {
             // Immediately update and draw gizmo
             Vector3 position = {
                 model.transform.m12, model.transform.m13, model.transform.m14};
-            Matrix transform = UpdateGizmo(camera, position);
+            Matrix transform = updateGizmo(camera, position);
 
             // Apply gizmo-produced transformation to the model
             model.transform = MatrixMultiply(model.transform, transform);
         EndDrawing();
     }
 
-    UnloadGizmo();
+    unloadGizmo();
     UnloadModel(model);
     CloseWindow();
 
@@ -61,6 +61,6 @@ int main(void) {
 Interactive example could be built and run like this:
 ```bash
 cd examples \
-&& gcc -o ./gizmo ./gizmo.c -lraylib -lm -lpthread -ldl \
-&& ./gizmo
+&& gcc -o ./raygizmo ./raygizmo.c -lraylib -lm -lpthread -ldl \
+&& ./raygizmo
 ```
