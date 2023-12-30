@@ -42,7 +42,7 @@ int main(void) {
             // Immediately update and draw gizmo
             Vector3 position = {
                 model.transform.m12, model.transform.m13, model.transform.m14};
-            Matrix transform = updateGizmo(camera, position);
+            Matrix transform = updateAndDrawGizmo(camera, position);
 
             // Apply gizmo-produced transformation to the model
             model.transform = MatrixMultiply(model.transform, transform);
