@@ -1,1 +1,4 @@
 examples/raygizmo
+compile_flags.txt
+include
+lib

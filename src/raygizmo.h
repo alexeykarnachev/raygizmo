@@ -42,8 +42,9 @@ applications, and to alter it and redistribute it freely, subject to the followi
   3. This notice may not be removed or altered from any source distribution.
 
 **********************************************************************************************/
-
-#include <raylib.h>
+#ifndef RAYGIZMO_H
+#define RAYGIZMO_H
+#include "raylib.h"
 
 void loadGizmo();
 void unloadGizmo();
@@ -53,7 +54,7 @@ Matrix updateAndDrawGizmo(Camera3D camera, Vector3 position);
 
 #include <stdlib.h>
 #include <string.h>
-#include <rlgl.h>
+#include "rlgl.h"
 #include "raymath.h"
 
 // This will be multiplied by the distance from the camera to the gizmo,
@@ -712,5 +713,5 @@ Matrix updateAndDrawGizmo(Camera3D camera, Vector3 position) {
     return transform;
 }
 
-#endif
-
+#endif  // RAYGIZMO_IMPLEMENTATION
+#endif  // RAYGIZMO_H

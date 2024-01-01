@@ -18,7 +18,6 @@
 
 #define RAYGIZMO_IMPLEMENTATION
 #include "../src/raygizmo.h"
-#undef RAYGIZMO_IMPLEMENTATION
 
 #define CAMERA_ROT_SPEED 0.003f
 #define CAMERA_MOVE_SPEED 0.01f
