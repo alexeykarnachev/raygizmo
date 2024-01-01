@@ -48,6 +48,9 @@ applications, and to alter it and redistribute it freely, subject to the followi
 
 void loadGizmo();
 void unloadGizmo();
+
+void drawGizmo(Camera3D camera, Vector3 position);
+Matrix updateGizmo(Camera3D camera, Vector3 position);
 Matrix updateAndDrawGizmo(Camera3D camera, Vector3 position);
 
 #ifdef RAYGIZMO_IMPLEMENTATION
@@ -420,7 +423,7 @@ static void drawRotHandles(
     EndShaderMode();
 }
 
-static void drawGizmo(
+static void drawGizmoExt(
     Camera3D camera,
     Vector3 position,
     Color rotHandleColorX,
@@ -498,7 +501,7 @@ static unsigned char getGizmoMaskPixel(Camera3D camera, Vector3 position) {
     rlClearScreenBuffers();
     rlDisableColorBlend();
 
-    drawGizmo(
+    drawGizmoExt(
         camera,
         position,
         ID_TO_RED_COLOR(ROT_HANDLE_X),
@@ -539,7 +542,7 @@ static unsigned char getGizmoMaskPixel(Camera3D camera, Vector3 position) {
     return maskVal;
 }
 
-static Matrix updateGizmoRot(Camera3D camera, Vector3 position) {
+static Matrix getGizmoTransformRot(Camera3D camera, Vector3 position) {
     if (!checkIfMouseMoved()) return MatrixIdentity();
 
     Vector2 posOnScreen = GetWorldToScreen(position, camera);
@@ -566,7 +569,7 @@ static Matrix updateGizmoRot(Camera3D camera, Vector3 position) {
     return transform;
 }
 
-static Matrix updateGizmoAxis(Camera3D camera, Vector3 position) {
+static Matrix getGizmoTransformAxis(Camera3D camera, Vector3 position) {
     if (!checkIfMouseMoved()) return MatrixIdentity();
 
     Vector2 p = Vector2Add(GetWorldToScreen(position, camera), GetMouseDelta());
@@ -589,7 +592,7 @@ static Matrix updateGizmoAxis(Camera3D camera, Vector3 position) {
     return transform;
 }
 
-static Matrix updateGizmoPlane(Camera3D camera, Vector3 position) {
+static Matrix getGizmoTransformPlane(Camera3D camera, Vector3 position) {
     if (!checkIfMouseMoved()) return MatrixIdentity();
 
     Vector2 p = Vector2Add(GetWorldToScreen(position, camera), GetMouseDelta());
@@ -601,7 +604,7 @@ static Matrix updateGizmoPlane(Camera3D camera, Vector3 position) {
     return transform;
 }
 
-static Matrix updateGizmo(Camera3D camera, Vector3 position, unsigned char maskVal) {
+static Matrix getGizmoTransform(Camera3D camera, Vector3 position, unsigned char maskVal) {
     bool isLMBDown = IsMouseButtonDown(0);
 
     if (!isLMBDown) gizmoState = GIZMO_COLD;
@@ -620,14 +623,14 @@ static Matrix updateGizmo(Camera3D camera, Vector3 position, unsigned char maskV
     }
 
     switch (gizmoState) {
-        case GIZMO_ACTIVE_ROT: return updateGizmoRot(camera, position);
-        case GIZMO_ACTIVE_AXIS: return updateGizmoAxis(camera, position);
-        case GIZMO_ACTIVE_PLANE: return updateGizmoPlane(camera, position);
+        case GIZMO_ACTIVE_ROT: return getGizmoTransformRot(camera, position);
+        case GIZMO_ACTIVE_AXIS: return getGizmoTransformAxis(camera, position);
+        case GIZMO_ACTIVE_PLANE: return getGizmoTransformPlane(camera, position);
         default: return MatrixIdentity();
     }
 }
 
-void loadGizmo() {
+void loadGizmo(void) {
     if (isGizmoLoaded) return;
 
     shaderRotHandleColor = LoadShaderFromMemory(
@@ -672,7 +675,7 @@ void loadGizmo() {
     isGizmoLoaded = true;
 }
 
-void unloadGizmo() {
+void unloadGizmo(void) {
     if (!isGizmoLoaded) return;
 
     UnloadShader(shaderRotHandleColor);
@@ -681,22 +684,12 @@ void unloadGizmo() {
     isGizmoLoaded = false;
 }
 
-Matrix updateAndDrawGizmo(Camera3D camera, Vector3 position) {
-    if (!isGizmoLoaded) {
-        TraceLog(LOG_ERROR, "Gizmo must be loaded before the update");
-        exit(1);
-    }
-
-    unsigned char maskVal = getGizmoMaskPixel(camera, position);
-    Matrix transform = updateGizmo(camera, position, maskVal);
-
-    // -------------------------------------------------------------------
-    // Draw gizmo
+void drawGizmo(Camera3D camera, Vector3 position) {
     HandleColors rotHandleColors = getHandleColors(GIZMO_HOT_ROT);
     HandleColors axisHandleColors = getHandleColors(GIZMO_HOT_AXIS);
     HandleColors planeHandleColors = getHandleColors(GIZMO_HOT_PLANE);
 
-    drawGizmo(
+    drawGizmoExt(
         camera,
         position,
         rotHandleColors.x,
@@ -709,9 +702,26 @@ Matrix updateAndDrawGizmo(Camera3D camera, Vector3 position) {
         planeHandleColors.y,
         planeHandleColors.z
     );
+}
 
+Matrix updateGizmo(Camera3D camera, Vector3 position) {
+    if (!isGizmoLoaded) {
+        TraceLog(LOG_ERROR, "Gizmo must be loaded before the update");
+        exit(1);
+    }
+
+    unsigned char maskVal = getGizmoMaskPixel(camera, position);
+    Matrix transform = getGizmoTransform(camera, position, maskVal);
+
+    return transform;
+}
+
+Matrix updateAndDrawGizmo(Camera3D camera, Vector3 position) {
+    Matrix transform = updateGizmo(camera, position);
+    drawGizmo(camera, position);
     return transform;
 }
 
 #endif  // RAYGIZMO_IMPLEMENTATION
 #endif  // RAYGIZMO_H
+
