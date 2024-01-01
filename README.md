@@ -14,7 +14,6 @@ In a simplest case gizmo can be used like this:
 ```c
 #define RAYGIZMO_IMPLEMENTATION
 #include "../src/raygizmo.h"
-#undef RAYGIZMO_IMPLEMENTATION
 
 int main(void) {
     InitWindow(800, 600, "Gizmo");
@@ -58,7 +57,7 @@ int main(void) {
 ```
 
 
-Interactive example could be built and run like this:
+Interactive example could be built and run like this (make sure you have libraylib and raylib headers in your lib and include paths):
 ```bash
 cd examples \
 && gcc -o ./raygizmo ./raygizmo.c -lraylib -lm -lpthread -ldl \
