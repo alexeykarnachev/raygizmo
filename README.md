@@ -13,10 +13,10 @@
 In a simplest case gizmo can be used like this:
 ```c
 #define RAYGIZMO_IMPLEMENTATION
-#include "../src/raygizmo.h"
+#include "raygizmo.h"
 
 int main(void) {
-    InitWindow(800, 600, "Gizmo");
+    InitWindow(800, 450, "raygizmo");
 
     Camera3D camera;
     camera.fovy = 45.0f;
@@ -26,29 +26,31 @@ int main(void) {
     camera.projection = CAMERA_PERSPECTIVE;
 
     Model model = LoadModelFromMesh(GenMeshTorus(0.3, 1.5, 16.0, 16.0));
-
-    loadGizmo();
+    RGizmo gizmo = rgizmo_create();
 
     while (!WindowShouldClose()) {
         BeginDrawing();
-            ClearBackground(BLACK);
-
-            // Draw the model
-            BeginMode3D(camera);
-                DrawModel(model, (Vector3){0.0, 0.0, 0.0}, 1.0, PURPLE);
-            EndMode3D();
-
-            // Immediately update and draw gizmo
+        {
             Vector3 position = {
                 model.transform.m12, model.transform.m13, model.transform.m14};
-            Matrix transform = updateAndDrawGizmo(camera, position);
+            rgizmo_update(&gizmo, camera, position);
+            model.transform = MatrixMultiply(model.transform, rgizmo_get_tranform(gizmo, position));
+            
+            ClearBackground(BLACK);
+            rlEnableDepthTest();
 
-            // Apply gizmo-produced transformation to the model
-            model.transform = MatrixMultiply(model.transform, transform);
+            BeginMode3D(camera);
+            {
+                DrawModel(model, (Vector3){0.0, 0.0, 0.0}, 1.0, PURPLE);
+            }
+            EndMode3D();
+
+            rgizmo_draw(gizmo, camera, position);
+        }
         EndDrawing();
     }
 
-    unloadGizmo();
+    rgizmo_unload();
     UnloadModel(model);
     CloseWindow();
 
@@ -57,9 +59,7 @@ int main(void) {
 ```
 
 
-Interactive example could be built and run like this (make sure you have libraylib and raylib headers in your lib and include paths):
+More complex example could be built and run like this (make sure you have libraylib and raylib headers in your lib and include paths):
 ```bash
-cd examples \
-&& gcc -o ./raygizmo ./raygizmo.c -lraylib -lm -lpthread -ldl \
-&& ./raygizmo
+gcc -o ./examples/raygizmo ./examples/raygizmo.c -lraylib -lm -lpthread -ldl && ./examples/raygizmo
 ```
