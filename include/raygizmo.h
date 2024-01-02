@@ -48,9 +48,6 @@ void rgizmo_update(RGizmo *gizmo, Camera3D camera, Vector3 position);
 void rgizmo_draw(RGizmo gizmo, Camera3D camera, Vector3 position);
 Matrix rgizmo_get_tranform(RGizmo gizmo, Vector3 position);
 
-// TODO: remove this
-#define RAYGIZMO_IMPLEMENTATION
-
 #ifdef RAYGIZMO_IMPLEMENTATION
 #include "raygizmo.h"
 #include "raylib.h"
