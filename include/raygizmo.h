@@ -417,6 +417,7 @@ void rgizmo_update(RGizmo *gizmo, Camera3D camera, Vector3 position) {
     // Draw gizmo into the picking fbo for the mouse pixel-picking
     rlEnableFramebuffer(PICKING_FBO);
     rlViewport(0, 0, PICKING_FBO_WIDTH, PICKING_FBO_HEIGHT);
+    rlClearColor(0, 0, 0, 0);
     rlClearScreenBuffers();
     rlDisableColorBlend();
 
