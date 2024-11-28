@@ -44,9 +44,9 @@ void rgizmo_unload(void);
 
 RGizmo rgizmo_create(void);
 
-void rgizmo_update(RGizmo *gizmo, Camera3D camera, Vector3 position);
-void rgizmo_draw(RGizmo gizmo, Camera3D camera, Vector3 position);
-Matrix rgizmo_get_tranform(RGizmo gizmo, Vector3 position);
+inline void rgizmo_update(RGizmo *gizmo, Camera3D camera, Vector3 position);
+inline void rgizmo_draw(RGizmo gizmo, Camera3D camera, Vector3 position);
+inline Matrix rgizmo_get_tranform(RGizmo gizmo, Vector3 position);
 
 #ifdef RAYGIZMO_IMPLEMENTATION
 #include "raygizmo.h"
@@ -124,12 +124,18 @@ void main() { \
 #define PICKING_FBO_WIDTH 512
 #define PICKING_FBO_HEIGHT 512
 
+#if defined(__cplusplus) || _MSC_VER
+#define X_AXIS Vector3{1.0, 0.0, 0.0}
+#define Y_AXIS Vector3{0.0, 1.0, 0.0}
+#define Z_AXIS Vector3{0.0, 0.0, 1.0}
+#else
 #define X_AXIS \
     (Vector3) { 1.0, 0.0, 0.0 }
 #define Y_AXIS \
     (Vector3) { 0.0, 1.0, 0.0 }
 #define Z_AXIS \
     (Vector3) { 0.0, 0.0, 1.0 }
+#endif
 
 #define SWAP(x, y) \
     do { \
@@ -223,10 +229,15 @@ static void draw_gizmo(
         float offset = radius * gizmo.view.plane_handle_offset;
         float size = radius * gizmo.view.plane_handle_size;
 
+#if defined (__cplusplus) || _MSC_VER
+        Vector3 px = Vector3Add(position, Vector3{0.0f, offset, offset});
+        Vector3 py = Vector3Add(position, Vector3{offset, 0.0f, offset});
+        Vector3 pz = Vector3Add(position, Vector3{offset, offset, 0.0f});
+#else
         Vector3 px = Vector3Add(position, (Vector3){0.0f, offset, offset});
         Vector3 py = Vector3Add(position, (Vector3){offset, 0.0f, offset});
         Vector3 pz = Vector3Add(position, (Vector3){offset, offset, 0.0f});
-
+#endif
         Handle hx = {
             px,
             Z_AXIS,
@@ -421,6 +432,19 @@ void rgizmo_update(RGizmo *gizmo, Camera3D camera, Vector3 position) {
     rlClearScreenBuffers();
     rlDisableColorBlend();
 
+#if defined(__cplusplus) || _MSC_VER
+    HandleColors colors = {
+        {Color{ROT_HANDLE_X, 0, 0, 0},
+         Color{ROT_HANDLE_Y, 0, 0, 0},
+         Color{ROT_HANDLE_Z, 0, 0, 0}},
+        {Color{AXIS_HANDLE_X, 0, 0, 0},
+         Color{AXIS_HANDLE_Y, 0, 0, 0},
+         Color{AXIS_HANDLE_Z, 0, 0, 0}},
+        {Color{PLANE_HANDLE_X, 0, 0, 0},
+         Color{PLANE_HANDLE_Y, 0, 0, 0},
+         Color{PLANE_HANDLE_Z, 0, 0, 0}}
+    };
+#else 
     HandleColors colors = {
         {(Color){ROT_HANDLE_X, 0, 0, 0},
          (Color){ROT_HANDLE_Y, 0, 0, 0},
@@ -431,7 +455,7 @@ void rgizmo_update(RGizmo *gizmo, Camera3D camera, Vector3 position) {
         {(Color){PLANE_HANDLE_X, 0, 0, 0},
          (Color){PLANE_HANDLE_Y, 0, 0, 0},
          (Color){PLANE_HANDLE_Z, 0, 0, 0}}};
-
+#endif
     draw_gizmo(*gizmo, camera, position, colors);
 
     rlDisableFramebuffer();
