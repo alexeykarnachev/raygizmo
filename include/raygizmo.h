@@ -44,9 +44,9 @@ void rgizmo_unload(void);
 
 RGizmo rgizmo_create(void);
 
-void rgizmo_update(RGizmo *gizmo, Camera3D camera, Vector3 position);
-void rgizmo_draw(RGizmo gizmo, Camera3D camera, Vector3 position);
-Matrix rgizmo_get_tranform(RGizmo gizmo, Vector3 position);
+inline void rgizmo_update(RGizmo *gizmo, Camera3D camera, Vector3 position);
+inline void rgizmo_draw(RGizmo gizmo, Camera3D camera, Vector3 position);
+inline Matrix rgizmo_get_transform(RGizmo gizmo, Vector3 position);
 
 #ifdef RAYGIZMO_IMPLEMENTATION
 #include "raygizmo.h"
@@ -229,7 +229,7 @@ static void draw_gizmo(
         float offset = radius * gizmo.view.plane_handle_offset;
         float size = radius * gizmo.view.plane_handle_size;
 
-#if defined (__cplusplus) || _MSC_VER
+#if defined (__cplusplus) || defined(_MSC_VER)
         Vector3 px = Vector3Add(position, Vector3{0.0f, offset, offset});
         Vector3 py = Vector3Add(position, Vector3{offset, 0.0f, offset});
         Vector3 pz = Vector3Add(position, Vector3{offset, offset, 0.0f});
@@ -625,7 +625,7 @@ void rgizmo_draw(RGizmo gizmo, Camera3D camera, Vector3 position) {
     draw_gizmo(gizmo, camera, position, colors);
 }
 
-Matrix rgizmo_get_tranform(RGizmo gizmo, Vector3 position) {
+Matrix rgizmo_get_transform(RGizmo gizmo, Vector3 position) {
     Matrix translation = MatrixTranslate(
         gizmo.update.translation.x,
         gizmo.update.translation.y,
