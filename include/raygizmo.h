@@ -44,9 +44,9 @@ void rgizmo_unload(void);
 
 RGizmo rgizmo_create(void);
 
-inline void rgizmo_update(RGizmo *gizmo, Camera3D camera, Vector3 position);
-inline void rgizmo_draw(RGizmo gizmo, Camera3D camera, Vector3 position);
-inline Matrix rgizmo_get_tranform(RGizmo gizmo, Vector3 position);
+void rgizmo_update(RGizmo *gizmo, Camera3D camera, Vector3 position);
+void rgizmo_draw(RGizmo gizmo, Camera3D camera, Vector3 position);
+Matrix rgizmo_get_tranform(RGizmo gizmo, Vector3 position);
 
 #ifdef RAYGIZMO_IMPLEMENTATION
 #include "raygizmo.h"
